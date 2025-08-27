@@ -1,3 +1,5 @@
+<img width="300" height="140" alt="PlanIt_Logo" src="https://github.com/user-attachments/assets/8c636124-27ba-49ee-b9a5-e5ded1c90aa8" />
+
 # AI Prompt Generator
 
 
@@ -33,5 +35,9 @@ The general idea is very simple and most of the fields corresponds to the **RICE
 * Checkbox **Generate as JSON** serves to switch between a plain text and JSON structure formatted prompt. Here, all the provided parameters are connected into key-value pairs with the respective field' names.
 * **GENERATE PROMPT** button - this one makes things happen and turns all provided parameters into a prompt text. Important note here is that, if the checkbox **Generate as JSON** is checked, the JSON prompt appears automatically.
 * **COPY TO CLIPBOARD** button - this one copies the generated prompt simply and enables the user to paste it directly into the chat window (or anywhere else :).
+
+To see it in action, visit the:
+* https://planit-maciejewski.pl/en/prompt-generator - English language version
+* https://planit-maciejewski.pl/generator-promptow - Polish language version
 
 **Happy prompting!**

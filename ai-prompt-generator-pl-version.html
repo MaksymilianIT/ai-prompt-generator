@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Promptów AI</title>
+    <style>
+        .ai-prompt-generator {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .ai-prompt-generator h2 {
+            color: #1f2937;
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .output-options {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 16px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+        }
+
+        .checkbox-wrapper label {
+            font-weight: 500;
+            color: #374151;
+            margin: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background-color: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-container {
+            margin-top: 24px;
+        }
+
+        .output-box {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 120px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #1f2937;
+        }
+
+        .output-box.json-output {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            border-color: #374151;
+        }
+
+        .copy-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .ai-prompt-generator {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+
+        .output-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-prompt-generator">
+        <h2>Generator Promptów AI</h2>
+        
+        <form id="promptForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="role">Rola</label>
+                    <input type="text" id="role" placeholder="np. Twórca Treści, Analityk Danych, etc.">
+                </div>
+                
+                <div class="form-group">
+                    <label for="instructions">Instrukcje</label>
+                    <input type="text" id="instructions" placeholder="np. Stwórz, Przeanalizuj, Napisz">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="context">Kontekst</label>
+                    <textarea id="context" placeholder="Informacje ogólne, sytuacja lub ustawienia..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expectations">Oczekiwania</label>
+                    <textarea id="expectations" placeholder="Podaj oczekiwania co do pożądanego rezultatu, czy ma być on krótki, czy pogłębiony itp."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="constraints">Ograniczenia</label>
+                    <input type="text" id="constraints" placeholder="np. Limit słów, wymagania formatu">
+                </div>
+                
+                <div class="form-group">
+                    <label for="outputStyle">Styl Odpowiedzi</label>
+                    <select id="outputStyle" onchange="toggleCustomStyle()">
+                        <option value="">Wybierz styl...</option>
+                        <option value="profesjonalny">Profesjonalny</option>
+                        <option value="swobodny">Swobodny</option>
+                        <option value="techniczny">Techniczny</option>
+                        <option value="kreatywny">Kreatywny</option>
+                        <option value="analityczny">Analityczny</option>
+                        <option value="konwersacyjny">Konwersacyjny</option>
+                        <option value="formalny">Formalny</option>
+                        <option value="przyjazny">Przyjazny</option>
+                        <option value="custom">Własny Styl Odpowiedzi</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group full-width" id="customStyleGroup" style="display: none;">
+                <label for="customStyle">Własny Styl Odpowiedzi</label>
+                <input type="text" id="customStyle" placeholder="Opisz własny styl.">
+            </div>
+            
+            <div class="form-group full-width">
+                <label for="outcome">Oczekiwany Rezultat</label>
+                <textarea id="outcome" placeholder="Opisz jak powinien wyglądać oczekiwany rezultat (lista, kod, e-mail itp.)"></textarea>
+            </div>
+        </form>
+        
+        <div class="output-options">
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="jsonOutput">
+                <label for="jsonOutput">Generuj jako JSON</label>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="generatePrompt()">Generuj Prompt</button>
+            <button class="btn btn-secondary" id="copyBtn" onclick="copyToClipboard()" disabled>Kopiuj do Schowka</button>
+        </div>
+        
+        <div class="output-container">
+            <div class="output-label">Wygenerowany Prompt:</div>
+            <div id="output" class="output-box">Po wypełnieniu żądanych parametrów promptu, kliknij "Generuj Prompt" aby stworzyć swój prompt AI.</div>
+        </div>
+    </div>
+
+    <script>
+        function generatePrompt() {
+            const role = document.getElementById('role').value.trim();
+            const instructions = document.getElementById('instructions').value.trim();
+            const context = document.getElementById('context').value.trim();
+            const expectations = document.getElementById('expectations').value.trim();
+            const constraints = document.getElementById('constraints').value.trim();
+            const outputStyle = document.getElementById('outputStyle').value.trim();
+            const customStyle = document.getElementById('customStyle').value.trim();
+            const outcome = document.getElementById('outcome').value.trim();
+            const isJsonOutput = document.getElementById('jsonOutput').checked;
+            
+            // Determine the actual output style to use
+            const actualOutputStyle = outputStyle === 'custom' ? customStyle : outputStyle;
+            
+            let prompt = '';
+            const outputBox = document.getElementById('output');
+            
+            if (isJsonOutput) {
+                // Generate JSON structure
+                const jsonStructure = {
+                    ...(role && { rola: role }),
+                    ...(instructions && { instrukcje: instructions }),
+                    ...(context && { kontekst: context }),
+                    ...(expectations && { oczekiwania: expectations }),
+                    ...(constraints && { ograniczenia: constraints }),
+                    ...(actualOutputStyle && { styl_odpowiedzi: actualOutputStyle }),
+                    ...(outcome && { oczekiwany_rezultat: outcome })
+                };
+                
+                prompt = JSON.stringify(jsonStructure, null, 2);
+                outputBox.classList.add('json-output');
+            } else {
+                // Generate natural language prompt following RICECO framework
+                let promptParts = [];
+                
+                // R - Role
+                if (role) {
+                    promptParts.push(`Jesteś ${role}.`);
+                }
+                
+                // I - Instructions
+                if (instructions) {
+                    promptParts.push(`Twoim zadaniem jest ${instructions.toLowerCase()}.`);
+                }
+                
+                // C - Context
+                if (context) {
+                    promptParts.push(`Kontekst: ${context}`);
+                }
+                
+                // E - Expectations
+                if (expectations) {
+                    promptParts.push(`Oczekiwania: ${expectations}`);
+                }
+                
+                // C - Constraints
+                if (constraints) {
+                    promptParts.push(`Ograniczenia: ${constraints}`);
+                }
+                
+                // O - Outcome + Output Style
+                let outcomeSection = '';
+                if (outcome && actualOutputStyle) {
+                    outcomeSection = `Oczekiwany rezultat: ${outcome} Odpowiadaj w sposób ${actualOutputStyle}.`;
+                } else if (outcome) {
+                    outcomeSection = `Oczekiwany rezultat: ${outcome}`;
+                } else if (actualOutputStyle) {
+                    outcomeSection = `Odpowiadaj w sposób ${actualOutputStyle}.`;
+                }
+                
+                if (outcomeSection) {
+                    promptParts.push(outcomeSection);
+                }
+                
+                prompt = promptParts.join('\n\n');
+                
+                // If no fields are filled, provide a basic template
+                if (!prompt.trim()) {
+                    prompt = 'Podaj parametry Twojego promptu.';
+                }
+                
+                outputBox.classList.remove('json-output');
+            }
+            
+            outputBox.textContent = prompt;
+            document.getElementById('copyBtn').disabled = false;
+        }
+        
+        function toggleCustomStyle() {
+            const outputStyle = document.getElementById('outputStyle').value;
+            const customStyleGroup = document.getElementById('customStyleGroup');
+            
+            if (outputStyle === 'custom') {
+                customStyleGroup.style.display = 'block';
+            } else {
+                customStyleGroup.style.display = 'none';
+                document.getElementById('customStyle').value = '';
+            }
+        }
+        
+        function copyToClipboard() {
+            const output = document.getElementById('output').textContent;
+            const copyBtn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(output).then(function() {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Skopiowano!';
+                copyBtn.classList.add('copy-success');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copy-success');
+                }, 2000);
+            }).catch(function(err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = output;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Skopiowano!';
+                copyBtn.classList.add('copy-success');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copy-success');
+                }, 2000);
+            });
+        }
+        
+        // Auto-generate on input change (optional feature)
+        document.getElementById('promptForm').addEventListener('input', function() {
+            // Uncomment the line below if you want auto-generation on input
+            // generatePrompt();
+        });
+        
+        // Handle JSON checkbox change
+        document.getElementById('jsonOutput').addEventListener('change', function() {
+            const output = document.getElementById('output').textContent;
+            if (output !== 'Kliknij "Generuj Prompt" aby stworzyć swój prompt AI...') {
+                generatePrompt();
+            }
+        });
+    </script>
+</body>
+</html>
